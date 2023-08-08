@@ -1,28 +1,68 @@
-import React, { useState, CSSProperties } from 'react';
+import React, { CSSProperties, useState } from 'react';
 
-
-type LoginProps = {
+interface LoginProps {
     onLogin: (username: string, password: string) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
-    const [username, setUsername] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
         onLogin(username, password);
     };
 
-    // ... rest of the code ...
+    return (
+        <div style={containerStyle}>
+            <form onSubmit={handleSubmit} style={formStyle}>
+                <div>
+                    <label htmlFor="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        value={username}
+                        onChange={e => setUsername(e.target.value)}
+                        style={inputStyle}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        style={inputStyle}
+                    />
+                </div>
+                <div>
+                    <button 
+                        type="submit" 
+                        style={buttonStyle}
+                        onMouseOver={e => e.currentTarget.style.backgroundColor = '#68d7a7'}
+                        onMouseOut={e => e.currentTarget.style.backgroundColor = '#84fab0'}
+                    >
+                        Login
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+};
 
+// Styles
 const containerStyle: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
     height: '100vh',
-    fontFamily: 'Arial, sans-serif'
+    fontFamily: 'Arial, sans-serif',
+    background: 'linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%)',
+    animation: 'Gradient 15s ease infinite',
+    position: 'relative',
+    overflow: 'hidden'
 };
 
 const formStyle: CSSProperties = {
@@ -30,57 +70,25 @@ const formStyle: CSSProperties = {
     border: '1px solid #ccc',
     padding: '20px',
     borderRadius: '5px',
-    boxShadow: '0 0 10px rgba(0,0,0,0.1)'
+    boxShadow: '0 0 10px rgba(0,0,0,0.2)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)'
 };
 
 const inputStyle: CSSProperties = {
     width: '100%',
     padding: '10px',
-    marginBottom: '10px',
-    borderRadius: '4px',
-    border: '1px solid #ccc'
+    margin: '10px 0',
+    border: '1px solid #ccc',
+    borderRadius: '5px'
 };
 
 const buttonStyle: CSSProperties = {
-    width: '100%',
-    padding: '10px',
-    background: '#007BFF',
-    color: '#fff',
+    padding: '10px 20px',
     border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
+    borderRadius: '5px',
+    backgroundColor: '#84fab0',
+    cursor: 'pointer',
+    transition: 'background-color 0.3s ease',
 };
-
-// ... rest of the code ...
-
-
-    return (
-        <div style={containerStyle}>
-            <form onSubmit={handleSubmit} style={formStyle}>
-                <div>
-                    <label htmlFor="username">Username: </label>
-                    <input 
-                        style={inputStyle}
-                        type="text" 
-                        id="username" 
-                        value={username} 
-                        onChange={(e) => setUsername(e.target.value)}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password: </label>
-                    <input 
-                        style={inputStyle}
-                        type="password" 
-                        id="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-                <button style={buttonStyle} type="submit">Login</button>
-            </form>
-        </div>
-    );
-}
 
 export default Login;
