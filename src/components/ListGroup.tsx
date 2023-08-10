@@ -9,10 +9,11 @@ function ListGroup() {
     'SARMS'
   ];
 
-  
+  if (items.length === 0) 
+  return <p>No Item Found</p>
   
   return (
-    <Fragment> 
+    <Fragment>  
         <h1>List</h1>
       <ul className="list-group">
         {items.map((item) => (
