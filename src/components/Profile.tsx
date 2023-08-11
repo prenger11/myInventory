@@ -64,7 +64,7 @@ const SubmitButton = styled.button`
 `;
 
 interface ProfileProps {
-    onSave: (email: string, username: string, password: string, streetAddress: string, phoneNumber: string, paymentMethod: string) => void;
+    onSave: (email: string, username: string, password: string, streetAddress: string, phoneNumber: string, paymentMethod: string, role: string) => void;
 }
 
 const Profile: React.FC<ProfileProps> = ({ onSave }) => {
@@ -74,10 +74,11 @@ const Profile: React.FC<ProfileProps> = ({ onSave }) => {
     const [streetAddress, setStreetAddress] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
+    const [role, setRole] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSave(email, username, password, streetAddress, phoneNumber, paymentMethod);
+        onSave(email, username, password, streetAddress, phoneNumber, paymentMethod, role);
     };
 
     return (
@@ -133,6 +134,18 @@ const Profile: React.FC<ProfileProps> = ({ onSave }) => {
                         <option value="creditCard">Credit Card</option>
                         <option value="debitCard">Debit Card</option>
                         <option value="paypal">PayPal</option>
+                    </Select>
+                </FormGroup>
+                <FormGroup>
+                    <Label>Role:</Label>
+                    <Select
+                        value={role}
+                        onChange={(e) => setRole(e.target.value)}
+                    >
+                        <option value="" disabled>Select your role</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Employee">Employee</option>
+                        <option value="Customer">Customer</option>
                     </Select>
                 </FormGroup>
                 <SubmitButton type="submit">Update Profile</SubmitButton>

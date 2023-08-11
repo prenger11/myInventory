@@ -1,11 +1,16 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
+// Import other components like Users, Products if they exist
+// import Users from './components/Users';
+import Products, { ProductDetails } from './components/Products';
+
+
 
 const App: React.FC = () => {
-
     const handleLogin = (username: string, password: string) => {
         console.log("Trying to log in with", username, password);
     };
@@ -17,21 +22,29 @@ const App: React.FC = () => {
     const handleProfile = (name: string, email: string, username: string, password: string) => {
         console.log("Trying to update Profile with", name, email, username, password);
     };
+    // const handleProduct = (image: string, productName: string, productDescription: string, quantity: string, price: string) => {
+    //     console.log("Trying to update Profile with", image, productName, productDescription, quantity, price);
+    // };
+    const handleProduct = (product: ProductDetails) => {
+        console.log("Trying to add a product with", product.image, product.productName, product.productDescription, product.quantity, product.price);
+    };
     
 
     return (
         <BrowserRouter>
-            <div>
-                <Routes>
-                    <Route path="/login" element={<Login onLogin={handleLogin} />} />
-                    <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
-                    <Route path="/profile" element={<Profile onSave={handleProfile} />} />
-                    {/* Other routes can go here */}
-                </Routes>
-            </div>
+            <Navbar />
+            <Routes>
+                <Route path="/login" element={<Login onLogin={handleLogin} />} />
+                <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
+                <Route path="/profile" element={<Profile onSave={handleProfile} />} />
+                <Route path="/products" element={<Products onAddProduct={handleProduct} />} />
+
+
+                {/* <Route path="/users" element={<Users />} /> */}
+
+            </Routes>
         </BrowserRouter>
     );
 }
 
 export default App;
-
