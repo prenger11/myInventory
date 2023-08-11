@@ -4,8 +4,9 @@ import Navbar from './components/Navbar';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
-// Import other components like Users, Products if they exist
-// import Users from './components/Users';
+import Users from './components/Users';
+import { UserProps } from './components/User';
+
 import Products, { ProductDetails } from './components/Products';
 
 
@@ -22,12 +23,23 @@ const App: React.FC = () => {
     const handleProfile = (name: string, email: string, username: string, password: string) => {
         console.log("Trying to update Profile with", name, email, username, password);
     };
-    // const handleProduct = (image: string, productName: string, productDescription: string, quantity: string, price: string) => {
-    //     console.log("Trying to update Profile with", image, productName, productDescription, quantity, price);
-    // };
+
     const handleProduct = (product: ProductDetails) => {
         console.log("Trying to add a product with", product.image, product.productName, product.productDescription, product.quantity, product.price);
     };
+
+    // Sample user data - you might fetch this from an API instead
+    const users = [
+        {
+            name: "John Doe",
+            email: "john@example.com",
+            phoneNumber: "123-456-7890",
+            mailingAddress: "123 Elm St, Springfield, IL",
+            userType: "Customer"  // <-- this should be either "Customer" or "Employee"
+        },
+        // ...other users
+    ];
+    
     
 
     return (
@@ -38,9 +50,8 @@ const App: React.FC = () => {
                 <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
                 <Route path="/profile" element={<Profile onSave={handleProfile} />} />
                 <Route path="/products" element={<Products onAddProduct={handleProduct} />} />
+                <Route path="/users" element={<Users users={users as UserProps[]} />} />
 
-
-                {/* <Route path="/users" element={<Users />} /> */}
 
             </Routes>
         </BrowserRouter>
