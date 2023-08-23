@@ -108,13 +108,13 @@ const SearchBar = styled.input`
 const Navbar = () => {
     return (
         <NavbarContainer>
-            <StyledLink to="/">  {/* Add this Link */}
+            <StyledLink to="/">
                 <Logo>MyInventory</Logo>
             </StyledLink>
 
             <NavLinks>
                 <StyledLink to="/users">Users</StyledLink>
-                <StyledLink to="/product">Product</StyledLink>
+                <StyledLink to="/all-products">Products</StyledLink> {/* Added Products route here */}
                 <StyledLink to="/login">Login</StyledLink>
                 <StyledLink to="/signup">Signup</StyledLink>
                 <StyledLink to="/profile">Profile</StyledLink>

@@ -8,8 +8,7 @@ import Users from './components/Users';
 import { UserProps } from './components/User';
 import Products, { ProductDetails } from './components/Product';
 import HomePage from './components/homepage';
-
-
+import AllProducts from './components/AllProducts';  // <-- Import the AllProducts component
 
 const App: React.FC = () => {
     const handleLogin = (username: string, password: string) => {
@@ -54,8 +53,6 @@ const App: React.FC = () => {
         // ...other users
     ];
     
-    
-
     return (
         <BrowserRouter>
             <Navbar />
@@ -65,6 +62,7 @@ const App: React.FC = () => {
                 <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
                 <Route path="/profile" element={<Profile onSave={handleProfile} />} />
                 <Route path="/product" element={<Products onAddProduct={handleProduct} />} />
+                <Route path="/all-products" element={<AllProducts />} />
                 <Route path="/users" element={<Users users={users as UserProps[]} />} />
             </Routes>
         </BrowserRouter>
