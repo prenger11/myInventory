@@ -80,7 +80,7 @@ interface ProductsProps {
 //     onAddProduct: (image: string, productName: string, productDescription: string, quantity: number, price: number) => void;
 // }
 
-const Products: React.FC<ProductsProps> = ({ onAddProduct }) => {
+const Product: React.FC<ProductsProps> = ({ onAddProduct }) => {
     const [image, setImage] = useState('');
     const [productName, setProductName] = useState('');
     const [productDescription, setProductDescription] = useState('');
@@ -160,4 +160,4 @@ const Products: React.FC<ProductsProps> = ({ onAddProduct }) => {
     );
 };
 
-export default Products;
+export default Product;

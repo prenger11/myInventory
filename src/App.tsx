@@ -6,8 +6,8 @@ import Signup from './components/Signup';
 import Profile from './components/Profile';
 import Users from './components/Users';
 import { UserProps } from './components/User';
-
-import Products, { ProductDetails } from './components/Products';
+import Products, { ProductDetails } from './components/Product';
+import HomePage from './components/homepage';
 
 
 
@@ -37,6 +37,20 @@ const App: React.FC = () => {
             mailingAddress: "123 Elm St, Springfield, IL",
             userType: "Customer"  // <-- this should be either "Customer" or "Employee"
         },
+        {
+            name: "Jane Doe",
+            email: "jane@example.com",
+            phoneNumber: "123-456-5555",
+            mailingAddress: "432 Elm St, Springfield, IL",
+            userType: "Admin"  // <-- this should be either "Customer" or "Employee"
+        },
+        {
+            name: "Jake Doe",
+            email: "jake@example.com",
+            phoneNumber: "555-456-5555",
+            mailingAddress: "555 Elm St, Springfield, IL",
+            userType: "Customer"  // <-- this should be either "Customer" or "Employee"
+        },
         // ...other users
     ];
     
@@ -46,13 +60,12 @@ const App: React.FC = () => {
         <BrowserRouter>
             <Navbar />
             <Routes>
+                <Route path="/" element={<HomePage />} />
                 <Route path="/login" element={<Login onLogin={handleLogin} />} />
                 <Route path="/signup" element={<Signup onSignup={handleSignup} />} />
                 <Route path="/profile" element={<Profile onSave={handleProfile} />} />
-                <Route path="/products" element={<Products onAddProduct={handleProduct} />} />
+                <Route path="/product" element={<Products onAddProduct={handleProduct} />} />
                 <Route path="/users" element={<Users users={users as UserProps[]} />} />
-
-
             </Routes>
         </BrowserRouter>
     );

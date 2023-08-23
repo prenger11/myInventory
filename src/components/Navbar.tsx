@@ -50,10 +50,12 @@ const NavbarContainer = styled.div`
 `;
 
 const Logo = styled.h1`
-    font-size: 1.5rem;
-    color: white;
-    flex-basis: 20%;
-    text-align: left;
+font-size: 1.5rem;
+color: white;
+flex-basis: 20%;
+text-align: left;
+margin: 0;  // Adding this to remove default margins on h1 tags
+cursor: pointer;
 `;
 
 const NavLinks = styled.div`
@@ -106,11 +108,13 @@ const SearchBar = styled.input`
 const Navbar = () => {
     return (
         <NavbarContainer>
-            <Logo>MyInventory</Logo>
+            <StyledLink to="/">  {/* Add this Link */}
+                <Logo>MyInventory</Logo>
+            </StyledLink>
 
             <NavLinks>
                 <StyledLink to="/users">Users</StyledLink>
-                <StyledLink to="/products">Products</StyledLink>
+                <StyledLink to="/product">Product</StyledLink>
                 <StyledLink to="/login">Login</StyledLink>
                 <StyledLink to="/signup">Signup</StyledLink>
                 <StyledLink to="/profile">Profile</StyledLink>
