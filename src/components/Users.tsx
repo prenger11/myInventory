@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const UsersContainer = styled.div`
     display: flex;
@@ -47,6 +48,22 @@ const UserType = styled.span.attrs<{ type: "Customer" | "Employee" }>(props => (
     width: max-content;
 `;
 
+const AddUserButton = styled(Link)` // Step 2: Style the button
+padding: 10px 20px;
+background-color: white;
+color: #84fab0;
+border: none;
+border-radius: 8px;
+margin-top: 20px;
+text-decoration: none;
+transition: background-color 0.2s;
+
+&:hover {
+    background-color: #8fd3f4;
+    color: white;
+}
+`;
+
 interface UserProps {
     name: string;
     email: string;
@@ -74,6 +91,7 @@ const Users: React.FC<UsersComponentProps> = ({ users }) => {
                         <UserType type={user.userType}>{user.userType}</UserType>
                     </UserCard>
                 ))}
+            <AddUserButton to="/signup">Add User</AddUserButton>
             </UserList>
         </UsersContainer>
     );

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const HomeContainer = styled.div`
     display: flex;
@@ -22,19 +23,19 @@ const Subtitle = styled.h2`
     margin-bottom: 40px;
 `;
 
-const Button = styled.button`
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #ffffff;
-    color: #84fab0;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.8);
-    }
+const Button = styled(Link)` // Step 2: Style the button
+padding: 10px 20px;
+border: none;
+border-radius: 4px;
+background-color: #ffffff;
+color: #84fab0;
+font-size: 1rem;
+cursor: pointer;
+transition: background-color 0.3s ease;
+
+&:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+}
 `;
 
 const HomePage: React.FC = () => {
@@ -42,7 +43,7 @@ const HomePage: React.FC = () => {
         <HomeContainer>
             <Title>Welcome to Our Application</Title>
             <Subtitle>Manage users, products, and much more!</Subtitle>
-            <Button>Get Started</Button>
+            <Button to="/signup">Get Started</Button>
         </HomeContainer>
     );
 };
