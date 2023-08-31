@@ -1,27 +1,26 @@
-// // # Path for the database connection file
-// db_file_path = os.path.join(my_inventory_path, 'my-inventory-backend', 'src', 'models', 'database.ts')
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
 
-// # Content for the database connection file
-// db_content = """
-import { createPool } from 'mysql2/promise';
+dotenv.config();
 
-const dbConfig = {
-    host: '127.0.0.1',
-    user: 'root',
-    password: '!QZPM1qzpm',
-    database: 'myInventory',
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-};
+const sequelize = new Sequelize(
+  process.env.DB_NAME || 'myInventory',
+  process.env.DB_USER || 'root',
+  process.env.DB_PASS || '!QZPM1qzpm',
+  {
+    host: process.env.DB_HOST || '127.0.0.1',
+    dialect: 'mysql'
+  }
+);
 
-const pool = createPool(dbConfig);
+// Test DB connection
+// sequelize.authenticate()
+//   .then(() => {
+//     console.log('Connection to the database has been established successfully.');
+//   })
+//   .catch(err => {
+//     console.error('Unable to connect to the database:', err);
+//   });
 
-export default pool;
-// """
 
-// # Write the content to the file
-// with open(db_file_path, 'w') as db_file:
-//     db_file.write(db_content)
-
-// db_file_path
+export default sequelize;
