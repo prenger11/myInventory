@@ -1,21 +1,27 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
+import { validationResult } from 'express-validator';
+import { placeOrderValidation, updateOrderStatusValidation, fetchUserOrdersValidation } from './validations/orderValidation';
 
 const router = Router();
 
 // Place new order
-router.post('/', (req, res) => {
-    const { userId, products } = req.body;  // assuming products is an array of { productId, quantity }
-    if (!userId || !products || products.length === 0) {
-        return res.status(400).json({ error: "User ID and products are required" });
+router.post('/', placeOrderValidation, (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
     }
+    const { userId, products } = req.body;
     // ... Logic to place a new order in the database
     res.status(201).json({ message: "Order placed successfully" });
 });
 
 // Get all orders for a user
-router.get('/user/:userId', (req, res) => {
+router.get('/user/:userId', fetchUserOrdersValidation, (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const userId = req.params.userId;
-    // Placeholder logic: In a real scenario, you'd fetch all orders for the user from the database
     // ... Logic to fetch all orders for the user from the database
     res.json([
         { id: 1, userId, total_price: 1951.49, status: "placed" },
@@ -24,13 +30,13 @@ router.get('/user/:userId', (req, res) => {
 });
 
 // Update order status
-router.put('/:orderId', (req, res) => {
+router.put('/:orderId', updateOrderStatusValidation, (req: Request, res: Response) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
     const orderId = req.params.orderId;
     const { status } = req.body;
-    if (!status) {
-        return res.status(400).json({ error: "Status is required" });
-    }
-    // Placeholder logic: In a real scenario, you'd update the order status in the database
     // ... Logic to update the order status in the database
     res.json({ message: "Order status updated successfully" });
 });

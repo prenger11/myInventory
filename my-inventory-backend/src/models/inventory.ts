@@ -1,5 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from './database';  // Adjust the path to your Sequelize instance
+import sequelize from './database';
+import Product from './products';  // Import the Product model
 
 class Inventory extends Model {
   public id!: number;
@@ -42,5 +43,8 @@ Inventory.init({
   tableName: 'inventories',
   sequelize: sequelize,
 });
+
+// Associations
+Inventory.belongsTo(Product, { foreignKey: 'productId' }); 
 
 export default Inventory;

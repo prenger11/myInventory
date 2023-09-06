@@ -1,5 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from './database';  // Adjust the path to point to your Sequelize instance
+import sequelize from './database';
+import Order from './orders';  // Import the Order model
+import OrderItem from './orderItem'; // Import the OrderItem model
+import Inventory from './inventory'; // Import the Inventory model
 
 class Product extends Model {
   public id!: number;
@@ -38,5 +41,10 @@ Product.init({
   tableName: 'products',
   sequelize: sequelize,
 });
+
+// Associations
+Product.belongsToMany(Order, { through: OrderItem, foreignKey: 'productId' }); // many-to-many with Order
+Order.belongsToMany(Product, { through: OrderItem, foreignKey: 'orderId' }); // the inverse relation
+Product.hasOne(Inventory, { foreignKey: 'productId' }); // one-to-one with Inventory
 
 export default Product;

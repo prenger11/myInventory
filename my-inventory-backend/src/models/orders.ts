@@ -1,5 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from './database';  // Adjust the path to your Sequelize instance
+import User from './users'; // Import the User model
+import OrderItem from './orderItem'; // Assuming this is the path to your OrderItem model
 
 class Order extends Model {
   public id!: number;
@@ -38,5 +40,9 @@ Order.init({
   tableName: 'orders',
   sequelize: sequelize,
 });
+
+// Associations
+Order.belongsTo(User, { foreignKey: 'userId' }); 
+Order.belongsToMany(OrderItem, { through: 'orderItems', foreignKey: 'orderId' }); // Assuming you have a junction table named 'orderItems'
 
 export default Order;

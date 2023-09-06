@@ -1,5 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from './database';  // Import your Sequelize instance
+import Order from './orders'; // Assuming this is the path to your Order model
+import Notification from './notification'; // Assuming this is the path to your Notification model
 
 class User extends Model {
   public id!: number;       // The '!' denotes that this attribute is always present
@@ -33,3 +35,9 @@ User.init({
   tableName: 'users',
   sequelize: sequelize, // passing the `sequelize` instance is required
 });
+
+// Associations
+User.hasMany(Order, { foreignKey: 'userId' });
+User.hasMany(Notification, { foreignKey: 'userId' });
+
+export default User;
