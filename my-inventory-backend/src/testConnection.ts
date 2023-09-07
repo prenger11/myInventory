@@ -1,17 +1,15 @@
-import pool from './models/database';
+import { Sequelize } from 'sequelize';
 
-async function testConnection() {
-    try {
-        const connection = await pool.getConnection();
-        console.log("Successfully connected to the database!");
-        connection.release();
-    } catch (error) {
-        if (error instanceof Error) {
-            console.error("Error connecting to the database:", error.message);
-        } else {
-            console.error("An unknown error occurred while connecting to the database.");
-        }
-    }
-}
+const sequelize = new Sequelize('database', 'username', 'password', {
+  host: 'localhost',
+  dialect: 'mysql'
+});
 
-testConnection();
+// Test the connection
+sequelize.authenticate()
+  .then(() => {
+    console.log('Connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+  });

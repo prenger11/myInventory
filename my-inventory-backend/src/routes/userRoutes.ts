@@ -36,10 +36,8 @@ const isAuthenticated = async (req: ExtendedRequest, res: Response, next: NextFu
     }
 };
 
-// Middleware for role-based access (You can implement this later when needed)
+// TODO: Implement the isAdmin middleware when you need role-based access
 const isAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: Fetch user from the database using req.userId and check if they have an admin role.
-    // For now, we'll assume all authenticated users are admins.
     next();
 };
 
@@ -49,13 +47,14 @@ router.post('/register', registerValidation, async (req: Request, res: Response)
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
+
     const { username, email, password } = req.body;
     
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // TODO: Insert user into the database with hashed password.
-    // await User.create({ username, email, password: hashedPassword }); // Replace with Sequelize logic
+    // await User.create({ username, email, password: hashedPassword }); // Uncomment and adjust for Sequelize
 
     res.status(201).json({ message: "User registered successfully" });
 });
@@ -65,31 +64,34 @@ router.post('/login', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     
     // TODO: Fetch user from the database.
-    // const user = await User.findOne({ where: { username } }); // Replace with Sequelize logic
-    // if (!user) {
-    //    return res.status(401).json({ error: "Invalid username or password" });
-    // }
+    // Uncomment and adjust for Sequelize:
+    const user = await User.findOne({ where: { username } });
+    if (!user) {
+       return res.status(401).json({ error: "Invalid username or password" });
+    }
     
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(password, user.password);  // Adjust 'user.password' as needed
     if (!validPassword) {
         return res.status(401).json({ error: "Invalid username or password" });
     }
 
-    const token = jwt.sign({ id: user.id }, "YOUR_SECRET_KEY", {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
         expiresIn: 86400 // 24 hours
     });
 
     res.json({ message: "Logged in successfully", token });
 });
 
+
 // Get user details (must be authenticated)
 router.get('/details', isAuthenticated, async (req: ExtendedRequest, res: Response) => {
     const userId = req.userId;
 
     // TODO: Fetch user details from the database.
-    // const userDetails = await User.findOne({ where: { id: userId } }); // Replace with Sequelize logic
+    // Uncomment and adjust for Sequelize:
+    // const userDetails = await User.findOne({ where: { id: userId } });
 
-    // For now, let's assume a sample userDetails object
+    // Sample userDetails object
     const userDetails = {
         id: userId,
         username: 'sampleUsername',
