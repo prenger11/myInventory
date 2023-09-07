@@ -1,36 +1,39 @@
-import express, { Request, Response, NextFunction } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import helmet from 'helmet';
-import dotenv from 'dotenv';
+import { createDatabaseConnection } from './config/database';
+import createRoutes from './routes/userRoutes'; // Import the modified userRoutes function
 
-// Load environment variables
-dotenv.config();
+const app: Application = express();
+const port = process.env.PORT || 3000;
 
-// Import routes
-import userRoutes from './src/routes/userRoutes';
-import productRoutes from './src/routes/productRoutes';
-import orderRoutes from './src/routes/orderRoutes';
-
-const app = express();
-
-// Middlewares
+// Middleware to enable CORS
 app.use(cors());
-app.use(helmet()); // Security middleware
+
+// Middleware to parse JSON requests
 app.use(express.json());
 
-// Route middlewares
-app.use('/api/users', userRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
+// Create the database connection
+createDatabaseConnection()
+  .then((db) => {
+    // Use the user routes with the database connection
+    app.use('/users', createRoutes(db)); // Use createRoutes function
 
-// Enhanced error handling middleware
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).send(err.message || 'Something broke!');
-});
+    // Define a sample route that uses the database connection
+    app.get('/', async (req: Request, res: Response) => {
+      try {
+        const [rows] = await db.execute('SELECT * FROM users');
+        res.json(rows);
+      } catch (error) {
+        console.error('Error querying the database:', error);
+        res.status(500).json({ error: 'Error querying the database' });
+      }
+    });
+  })
+  .catch((error) => {
+    console.error('Error creating the database connection:', error);
+  });
 
 // Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });

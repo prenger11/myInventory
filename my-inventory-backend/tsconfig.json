@@ -1,16 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "module": "commonjs",
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "outDir": "./dist"
-    },
-    "include": [
-        "src/**/*.ts",
-        "src/**/*.d.ts"
-      ],
-    "exclude": ["node_modules"]
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "CommonJS",
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    // Other compiler options...
+  },
+  "include": [
+    "src/**/*.ts", // Include your source files
+    "routes/**/*.ts" // Include the routes directory and TypeScript files
+  ]
 }
