@@ -1,16 +1,16 @@
-// app.ts
+// // app.ts
 
-import express from 'express';
-import userRoutes from './routes/userRoutes';
+// import express from 'express';
+// import userRoutes from './routes/userRoutes';
 
-const app = express();
-const port = 3000;
+// const app = express();
+// const port = 3000;
 
-app.use(express.json());
+// app.use(express.json());
 
-// Use the user routes
-app.use('/users', userRoutes);
+// // Use the user routes
+// app.use('/users', userRoutes);
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+// app.listen(port, () => {
+//   console.log(`Server is running on port ${port}`);
+// });

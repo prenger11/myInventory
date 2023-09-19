@@ -1,80 +1,92 @@
 import React, { CSSProperties, useState } from 'react';
-
-// const keyframes = `
-//     @keyframes Gradient {
-//         0% {
-//             background-position: 0% 50%;
-//         }
-//         50% {
-//             background-position: 100% 50%;
-//         }
-//         100% {
-//             background-position: 0% 50%;
-//         }
-//     }
-// `;
-
-// Append the keyframes to the document
-// const styleSheet = document.styleSheets[0];
-// styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface SignupProps {
-    onSignup: (name: string, email: string, username: string, password: string) => void;
+    onSignup?: (name: string, email: string, username: string, password: string, address: string, phoneNumber: string, role: string) => void;
 }
 
+type FormData = {
+    name: string;
+    email: string;
+    username: string;
+    password: string;
+    address: string;
+    phoneNumber: string;
+    role: "Customer" | "Employee";
+};
+
 const Signup: React.FC<SignupProps> = ({ onSignup }) => {
-    const [name, setName] = useState('');
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [formData, setFormData] = useState<FormData>({
+        name: '',
+        email: '',
+        username: '',
+        password: '',
+        address: '',
+        phoneNumber: '',
+        role: 'Customer'
+    });
+
+    const [feedback, setFeedback] = useState<string>('');
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const navigate = useNavigate();
+
+    const handleSignup = async () => {
+        try {
+            const endpoint = 'http://localhost:3000/users/register';
+            const response = await axios.post(endpoint, formData);
+
+            if (response.status === 201) {
+                setFeedback('User registered successfully');
+                onSignup && onSignup(formData.name, formData.email, formData.username, formData.password, formData.address, formData.phoneNumber, formData.role);
+                navigate('/users');
+            } else {
+                setFeedback('Error registering user');
+            }
+        } catch (error) {
+            setFeedback('Error registering user');
+        }
+    };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSignup(name, email, username, password);
+        handleSignup();
     };
 
     return (
         <div style={containerStyle}>
+            {feedback && <div>{feedback}</div>}
             <form onSubmit={handleSubmit} style={formStyle}>
+                {(['name', 'email', 'username', 'password', 'address', 'phoneNumber'] as Array<keyof FormData>).map(field => (
+                    <div key={field}>
+                        <label htmlFor={field}>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                        <input
+                            type={field === 'password' ? 'password' : 'text'}
+                            id={field}
+                            name={field}
+                            value={formData[field]}
+                            onChange={handleChange}
+                            style={inputStyle}
+                        />
+                    </div>
+                ))}
                 <div>
-                    <label htmlFor="name">Name</label>
-                    <input
-                        type="text"
-                        id="name"
-                        value={name}
-                        onChange={e => setName(e.target.value)}
+                    <label htmlFor="role">Role</label>
+                    <select 
+                        id="role"
+                        name="role"
+                        value={formData.role}
+                        onChange={handleChange}
                         style={inputStyle}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="email">Email</label>
-                    <input
-                        type="email"
-                        id="email"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        style={inputStyle}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="username">Username</label>
-                    <input
-                        type="text"
-                        id="username"
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
-                        style={inputStyle}
-                    />
-                </div>
-                <div>
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        style={inputStyle}
-                    />
+                    >
+                        <option value="Customer">Customer</option>
+                        <option value="Employee">Employee</option>
+                    </select>
                 </div>
                 <div>
                     <button 
@@ -91,7 +103,6 @@ const Signup: React.FC<SignupProps> = ({ onSignup }) => {
     );
 };
 
-// Styles
 const containerStyle: CSSProperties = {
     display: 'flex',
     flexDirection: 'column',

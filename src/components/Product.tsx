@@ -76,36 +76,55 @@ interface ProductsProps {
     onAddProduct: (product: ProductDetails) => void;
 }
 
-// interface ProductsProps {
-//     onAddProduct: (image: string, productName: string, productDescription: string, quantity: number, price: number) => void;
-// }
-
 const Product: React.FC<ProductsProps> = ({ onAddProduct }) => {
-    const [image, setImage] = useState('');
-    const [productName, setProductName] = useState('');
-    const [productDescription, setProductDescription] = useState('');
-    const [quantity, setQuantity] = useState<number | string>('');
-    const [price, setPrice] = useState<number | string>('');
+    const [product, setProduct] = useState<ProductDetails>({
+        image: '',
+        productName: '',
+        productDescription: '',
+        quantity: 0,
+        price: 0
+    });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (image && productName && productDescription && quantity && price) {
-            onAddProduct({
-                image,
-                productName,
-                productDescription,
-                quantity: Number(quantity),
-                price: Number(price)
-            });
-            // Clear the form
-            setImage('');
-            setProductName('');
-            setProductDescription('');
-            setQuantity('');
-            setPrice('');
+        if (product.image && product.productName && product.productDescription && product.quantity && product.price) {
+            try {
+                const response = await fetch('http://localhost:YOUR_BACKEND_PORT/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(product)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    onAddProduct(product);
+                    alert(data.message);
+                    // Clear the form
+                    setProduct({
+                        image: '',
+                        productName: '',
+                        productDescription: '',
+                        quantity: 0,
+                        price: 0
+                    });
+                } else {
+                    alert("Error adding product: " + data.message);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to add product.");
+            }
         } else {
             alert("Please fill out all fields before submitting.");
         }
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setProduct(prevState => ({ ...prevState, [name]: value }));
     };
 
     return (
@@ -116,8 +135,9 @@ const Product: React.FC<ProductsProps> = ({ onAddProduct }) => {
                     <Label>Image URL:</Label>
                     <Input
                         type="url"
-                        value={image}
-                        onChange={(e) => setImage(e.target.value)}
+                        name="image"
+                        value={product.image}
+                        onChange={handleChange}
                         placeholder="https://example.com/image.jpg"
                     />
                 </FormGroup>
@@ -125,24 +145,27 @@ const Product: React.FC<ProductsProps> = ({ onAddProduct }) => {
                     <Label>Product Name:</Label>
                     <Input
                         type="text"
-                        value={productName}
-                        onChange={(e) => setProductName(e.target.value)}
+                        name="productName"
+                        value={product.productName}
+                        onChange={handleChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <Label>Product Description:</Label>
                     <TextArea
                         rows={5}
-                        value={productDescription}
-                        onChange={(e) => setProductDescription(e.target.value)}
+                        name="productDescription"
+                        value={product.productDescription}
+                        onChange={handleChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <Label>Quantity:</Label>
                     <Input
                         type="number"
-                        value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
+                        name="quantity"
+                        value={product.quantity}
+                        onChange={handleChange}
                     />
                 </FormGroup>
                 <FormGroup>
@@ -150,8 +173,9 @@ const Product: React.FC<ProductsProps> = ({ onAddProduct }) => {
                     <Input
                         type="number"
                         step="0.01"
-                        value={price}
-                        onChange={(e) => setPrice(e.target.value)}
+                        name="price"
+                        value={product.price}
+                        onChange={handleChange}
                     />
                 </FormGroup>
                 <SubmitButton type="submit">Add Product</SubmitButton>
