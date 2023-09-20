@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
@@ -20,17 +21,23 @@ const UserList = styled.div`
     max-width: 1000px;
 `;
 
+const UserCardLink = styled(Link)`
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    margin-bottom: 20px;
+    &:hover {
+        text-decoration: none;
+    }
+`;
+
 const UserCard = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
     border: 1px solid #ddd;
     padding: 15px;
-    margin-bottom: 20px;
     border-radius: 4px;
-    &:last-child {
-        margin-bottom: 0;
-    }
 `;
 
 const UserInfo = styled.div`
@@ -38,60 +45,79 @@ const UserInfo = styled.div`
     flex-direction: column;
 `;
 
-const UserType = styled.span.attrs<{ type: "Customer" | "Employee" }>(props => ({
-    type: props.type,
-}))`
-    background-color: ${props => props.type === "Customer" ? "#84fab0" : "#8fd3f4"};
+const UserType = styled.span<{ type: 'Customer' | 'Employee' }>`
+    background-color: ${({ type }) => (type === 'Customer' ? '#84fab0' : '#8fd3f4')};
     padding: 5px 10px;
     border-radius: 20px;
     text-align: center;
     width: max-content;
 `;
 
-const AddUserButton = styled(Link)` // Step 2: Style the button
-padding: 10px 20px;
-background-color: white;
-color: #84fab0;
-border: none;
-border-radius: 8px;
-margin-top: 20px;
-text-decoration: none;
-transition: background-color 0.2s;
+const AddUserButton = styled(Link)`
+    padding: 10px 20px;
+    background-color: white;
+    color: #84fab0;
+    border: none;
+    border-radius: 8px;
+    margin-top: 20px;
+    text-decoration: none;
+    transition: background-color 0.2s;
 
-&:hover {
-    background-color: #8fd3f4;
-    color: white;
-}
+    &:hover {
+        background-color: #8fd3f4;
+        color: white;
+    }
 `;
 
 interface UserProps {
+    id: number;
     name: string;
     email: string;
     phoneNumber: string;
-    mailingAddress: string;
-    userType: "Customer" | "Employee";
+    address: string;
+    role: 'Customer' | 'Employee';
 }
 
-interface UsersComponentProps {
-    users: UserProps[];
-}
+const Users: React.FC = () => {
+    const [users, setUsers] = useState<UserProps[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
-const Users: React.FC<UsersComponentProps> = ({ users }) => {
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get<{ users: UserProps[] }>('http://localhost:3000/users');
+                setUsers(response.data.users);
+                setLoading(false);
+            } catch (err) {
+                setError(`Error loading users: ${(err as Error).message}`);
+                setLoading(false);
+            }
+        };
+
+        fetchUsers();
+    }, []);
+
+    if (loading) return <div>Loading...</div>;
+    if (error) return <div>{error}</div>;
+
     return (
         <UsersContainer>
             <UserList>
-                {users.map((user, index) => (
-                    <UserCard key={index}>
-                        <UserInfo>
-                            <strong>{user.name}</strong>
-                            <span>Email: {user.email}</span>
-                            <span>Phone: {user.phoneNumber}</span>
-                            <span>Address: {user.mailingAddress}</span>
-                        </UserInfo>
-                        <UserType type={user.userType}>{user.userType}</UserType>
-                    </UserCard>
+                {users.map((user) => (
+                    <UserCardLink to={`/user/${user.id}`} key={user.id}>
+                        <UserCard>
+                            <UserInfo>
+                                <strong>{user.name}</strong>
+                                <span>Email: {user.email}</span>
+                                <span>Phone: {user.phoneNumber}</span>
+                                <span>Address: {user.address}</span>
+                            </UserInfo>
+                            <UserType type={user.role}>{user.role}</UserType>
+                        </UserCard>
+                    </UserCardLink>
                 ))}
-            <AddUserButton to="/signup">Add User</AddUserButton>
+                <AddUserButton to="/signup">Add User</AddUserButton>
             </UserList>
         </UsersContainer>
     );
