@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const UserContainer = styled.div`
     padding: 15px;
@@ -14,6 +15,7 @@ const DataPoint = styled.div`
 `;
 
 export interface UserProps {
+    id: any;
     username: string;
     email: string;
     role: "Customer" | "Employee";
@@ -43,6 +45,21 @@ const User: React.FC = () => {
             });
     }, []);
 
+    const handleDeleteUser = () => {
+        if (userData) {
+            const userId = userData.id;
+
+            axios.delete(`http://localhost:3000/users/${userId}`)
+                .then(() => {
+                    // Redirect to the Users page after successful deletion
+                    window.location.href = '/users';
+                })
+                .catch(err => {
+                    console.error('Error deleting user:', err);
+                });
+        }
+    };
+
     if (error) return <div>{error}</div>;
     if (!userData) return <div>Loading...</div>;
 
@@ -54,6 +71,8 @@ const User: React.FC = () => {
             <DataPoint><strong>Address:</strong> {userData.address}</DataPoint>
             <DataPoint><strong>Phone:</strong> {userData.phone}</DataPoint>
             <DataPoint><strong>Created At:</strong> {userData.created_at}</DataPoint>
+            <button onClick={handleDeleteUser}>Delete User</button>
+            <Link to="/users">Back to Users</Link>
         </UserContainer>
     );
 };

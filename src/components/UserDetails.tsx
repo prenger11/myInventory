@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 const UserDetailsContainer = styled.div`
     display: flex;
@@ -24,6 +24,38 @@ const UserDetailsCard = styled.div`
 const UserDetailsInfo = styled.div`
     display: flex;
     flex-direction: column;
+`;
+
+const EditButton = styled(Link)`
+    padding: 5px 20px;
+    background-color: #84fab0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-top: 5px; /* Adjust the margin-top value as needed */
+    margin-bottom: 10px; /* Add margin-bottom to create space below */
+    text-decoration: none;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: #68d7a7;
+    }
+`;
+
+const DeleteButton = styled.button`
+    padding: 5px 20px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin-top: 5px; /* Adjust the margin-top value as needed */
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: #ff4242;
+    }
 `;
 
 interface UserProps {
@@ -57,6 +89,21 @@ const UserDetails: React.FC = () => {
         fetchUser();
     }, [id]);
 
+    const handleDeleteUser = () => {
+        if (user) {
+            const userId = user.id;
+
+            axios.delete(`http://localhost:3000/users/${userId}`)
+                .then(() => {
+                    // Redirect to the Users page after successful deletion
+                    window.location.href = '/users';
+                })
+                .catch(err => {
+                    console.error('Error deleting user:', err);
+                });
+        }
+    };
+
     if (loading) return <div>Loading...</div>;
     if (error) return <div>{error}</div>;
 
@@ -79,6 +126,8 @@ const UserDetails: React.FC = () => {
                     <span>Role: {user.role}</span>
                     <span>Created On: {formattedCreatedAt}</span>
                 </UserDetailsInfo>
+                <EditButton to={`/user/${id}/edit`}>Edit</EditButton>
+                <DeleteButton onClick={handleDeleteUser}>Delete</DeleteButton>
             </UserDetailsCard>
         </UserDetailsContainer>
     );

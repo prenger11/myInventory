@@ -9,7 +9,7 @@
     "allowSyntheticDefaultImports": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "node", // Change to "node" for resolving modules like 'react-router-dom'
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

@@ -1,187 +1,218 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
 
 const ProductsContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+`;
+
+const FormContainer = styled.div`
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
 `;
 
 const Form = styled.form`
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 20px 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 600px;
-    max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 20px;
 `;
 
 const FormGroup = styled.div`
-    margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Label = styled.label`
-    display: block;
-    margin-bottom: 5px;
+  font-size: 18px;
+  margin-bottom: 5px;
 `;
 
 const Input = styled.input`
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    transition: border-color 0.2s;
-    &:focus {
-        border-color: #84fab0;
-    }
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+  &:focus {
+    border-color: #84fab0;
+  }
 `;
 
 const TextArea = styled.textarea`
-    width: 100%;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 16px;
-    transition: border-color 0.2s;
-    resize: vertical;
-    &:focus {
-        border-color: #84fab0;
-    }
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+  resize: vertical;
+  &:focus {
+    border-color: #84fab0;
+  }
 `;
 
 const SubmitButton = styled.button`
-    padding: 10px 20px;
-    background-color: #84fab0;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    &:hover {
-        background-color: #6ae8a5;
-    }
+  padding: 10px 20px;
+  background-color: #84fab0;
+  border: none;
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  &:hover {
+    background-color: #6ae8a5;
+  }
+`;
+
+const Title = styled.h2`
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+`;
+
+const ErrorMessage = styled.div`
+  color: red;
+  text-align: center;
+  margin-top: 10px;
+`;
+
+const SuccessMessage = styled.div`
+  color: green;
+  text-align: center;
+  margin-top: 10px;
 `;
 
 export interface ProductDetails {
-    image: string;
-    productName: string;
-    productDescription: string;
-    quantity: number;
-    price: number;
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  stock_quantity: number;
+  created_at: string;
+  image: string;
+  // Add more fields as needed
 }
 
-interface ProductsProps {
-    onAddProduct: (product: ProductDetails) => void;
+interface ProductProps {
+  onAddProduct: (product: ProductDetails) => void;
 }
 
-const Product: React.FC<ProductsProps> = ({ onAddProduct }) => {
+const Product: React.FC<ProductProps> = ({ onAddProduct }) => {
     const [product, setProduct] = useState<ProductDetails>({
+        id: 0,
+        name: '',
+        description: '',
+        price: 0,
+        stock_quantity: 0,
+        created_at: new Date().toISOString().slice(0, 19).replace('T', ' '), // Format the date
         image: '',
-        productName: '',
-        productDescription: '',
-        quantity: 0,
-        price: 0
     });
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (product.image && product.productName && product.productDescription && product.quantity && product.price) {
-            try {
-                const response = await fetch('http://localhost:YOUR_BACKEND_PORT/products', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(product)
-                });
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
-                const data = await response.json();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMessage('');
 
-                if (response.ok) {
-                    onAddProduct(product);
-                    alert(data.message);
-                    // Clear the form
-                    setProduct({
-                        image: '',
-                        productName: '',
-                        productDescription: '',
-                        quantity: 0,
-                        price: 0
-                    });
-                } else {
-                    alert("Error adding product: " + data.message);
-                }
-            } catch (error) {
-                console.error("Error:", error);
-                alert("Failed to add product.");
-            }
-        } else {
-            alert("Please fill out all fields before submitting.");
-        }
-    };
+    try {
+      const response = await axios.post('http://localhost:3000/all-products', product);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setProduct(prevState => ({ ...prevState, [name]: value }));
-    };
+      if (response.status === 201) {
+        setSuccessMessage('Product created successfully');
+        // Notify the parent component about the new product
+        onAddProduct(product);
+        // Clear the form
+        setProduct({
+          id: 0,
+          name: '',
+          description: '',
+          price: 0,
+          stock_quantity: 0,
+          created_at: '', // Use a valid date string here
+          image: '',
+        });
+      } else {
+        setErrorMessage(`Error creating product: ${response.data.message}`);
+      }
+    } catch (error) {
+      setErrorMessage(`Error creating product: ${(error as Error).message}`);
+    }
+  };
 
-    return (
-        <ProductsContainer>
-            <Form onSubmit={handleSubmit}>
-                <h2>Add New Product</h2>
-                <FormGroup>
-                    <Label>Image URL:</Label>
-                    <Input
-                        type="url"
-                        name="image"
-                        value={product.image}
-                        onChange={handleChange}
-                        placeholder="https://example.com/image.jpg"
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <Label>Product Name:</Label>
-                    <Input
-                        type="text"
-                        name="productName"
-                        value={product.productName}
-                        onChange={handleChange}
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <Label>Product Description:</Label>
-                    <TextArea
-                        rows={5}
-                        name="productDescription"
-                        value={product.productDescription}
-                        onChange={handleChange}
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <Label>Quantity:</Label>
-                    <Input
-                        type="number"
-                        name="quantity"
-                        value={product.quantity}
-                        onChange={handleChange}
-                    />
-                </FormGroup>
-                <FormGroup>
-                    <Label>Price:</Label>
-                    <Input
-                        type="number"
-                        step="0.01"
-                        name="price"
-                        value={product.price}
-                        onChange={handleChange}
-                    />
-                </FormGroup>
-                <SubmitButton type="submit">Add Product</SubmitButton>
-            </Form>
-        </ProductsContainer>
-    );
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setProduct((prevProduct) => ({ ...prevProduct, [name]: value }));
+  };
+
+  return (
+    <ProductsContainer>
+      <FormContainer>
+        <Title>Add New Product</Title>
+        <Form onSubmit={handleSubmit}>
+          <FormGroup>
+            <Label>Image URL:</Label>
+            <Input
+              type="url"
+              name="image"
+              value={product.image}
+              onChange={handleChange}
+              placeholder="https://example.com/image.jpg"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Product Name:</Label>
+            <Input
+              type="text"
+              name="name"
+              value={product.name}
+              onChange={handleChange}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Product Description:</Label>
+            <TextArea
+              rows={5}
+              name="description"
+              value={product.description}
+              onChange={handleChange}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Quantity:</Label>
+            <Input
+              type="number"
+              name="stock_quantity"
+              value={product.stock_quantity}
+              onChange={handleChange}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Price:</Label>
+            <Input
+              type="number"
+              step="0.01"
+              name="price"
+              value={product.price}
+              onChange={handleChange}
+            />
+          </FormGroup>
+          <SubmitButton type="submit">Add Product</SubmitButton>
+        </Form>
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+        {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
+      </FormContainer>
+    </ProductsContainer>
+  );
 };
 
 export default Product;
