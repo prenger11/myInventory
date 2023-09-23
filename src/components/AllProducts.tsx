@@ -49,7 +49,8 @@ const ProductPrice = styled.span`
   font-weight: bold;
 `;
 
-interface ProductProps {
+
+export interface ProductProps {
   id: number;
   name: string;
   description: string;
@@ -57,7 +58,11 @@ interface ProductProps {
   stock_quantity: number;
 }
 
-const AllProducts: React.FC = () => {
+interface AllProductsProps {
+  onAddToCart: (product: ProductProps) => void;
+}
+
+const AllProducts: React.FC<AllProductsProps> = ({ onAddToCart }) => {
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,6 +97,7 @@ const AllProducts: React.FC = () => {
                 <ProductPrice>Price: ${Number(product.price).toFixed(2)}</ProductPrice>
                 <span>Quantity: {product.stock_quantity}</span>
               </ProductInfo>
+              <button onClick={() => onAddToCart(product)}>Add to Cart</button> {/* Add to Cart button */}
             </ProductCard>
           </ProductCardLink>
         ))}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 
 // Interface definition for ProductProps
 interface ProductProps {
@@ -54,6 +54,7 @@ const Button = styled.button`
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-right: 10px; /* Add margin to create spacing */
 
   &:hover {
     background-color: #68d7a7;
@@ -67,20 +68,24 @@ const ButtonContainer = styled.div`
 `;
 
 const BackLink = styled(Link)`
-  margin-top: 10px;
+  margin-top: 0px; /* Adjust margin-top value for better alignment */
   text-decoration: none;
-  color: #84fab0;
-  transition: color 0.3s ease;
+  padding: 10px 20px; /* Apply button-like padding */
+  background-color: #84fab0; /* Match button background color */
+  color: white; /* Match button text color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 
   &:hover {
-    color: #68d7a7;
+    background-color: #68d7a7; /* Match button hover color */
   }
 `;
 
 // ProductEdit component
 const ProductEdit: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
 
   const [productData, setProductData] = useState<ProductProps>({
     id: 0,
@@ -92,6 +97,8 @@ const ProductEdit: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -120,12 +127,28 @@ const ProductEdit: React.FC = () => {
 
   const saveChanges = async () => {
     try {
+      setValidationError(null);
+
+      if (!productData.name || !productData.description) {
+        setValidationError("Name and Description are required fields.");
+        return;
+      }
+
+      if (productData.price <= 0 || productData.stock_quantity < 0) {
+        setValidationError("Price must be greater than 0, and Stock Quantity must be non-negative.");
+        return;
+      }
+
+      setSaving(true);
+
       if (id) {
         await axios.put(`http://localhost:3000/all-products/${id}`, productData);
-        navigate(`/all-products/${id}`);
+        window.location.href = `/all-products`;
       }
     } catch (err) {
       console.error('Error saving changes:', err);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -136,12 +159,13 @@ const ProductEdit: React.FC = () => {
     <ProductEditContainer>
       <h2>Edit Product</h2>
       <ProductDetailsForm>
+        {validationError && <div style={{ color: 'red' }}>{validationError}</div>}
         <FormField>
           <Label>Name</Label>
           <Input
             type="text"
             name="name"
-            value={productData?.name || ''}
+            value={productData.name}
             onChange={handleInputChange}
           />
         </FormField>
@@ -150,7 +174,7 @@ const ProductEdit: React.FC = () => {
           <Input
             type="text"
             name="description"
-            value={productData?.description || ''}
+            value={productData.description}
             onChange={handleInputChange}
           />
         </FormField>
@@ -160,7 +184,7 @@ const ProductEdit: React.FC = () => {
             type="number"
             step="0.01"
             name="price"
-            value={productData?.price || ''}
+            value={productData.price}
             onChange={handleInputChange}
           />
         </FormField>
@@ -169,7 +193,7 @@ const ProductEdit: React.FC = () => {
           <Input
             type="number"
             name="stock_quantity"
-            value={productData?.stock_quantity || ''}
+            value={productData.stock_quantity}
             onChange={handleInputChange}
           />
         </FormField>
@@ -178,16 +202,16 @@ const ProductEdit: React.FC = () => {
           <Input
             type="text"
             name="created_at"
-            value={productData?.created_at || ''}
+            value={productData.created_at}
             readOnly
           />
         </FormField>
         <ButtonContainer>
           <Link to={`/all-products/${id}`}>
-            <Button onClick={saveChanges}>Save Changes</Button>
+            <Button onClick={saveChanges} disabled={saving}>Save Changes</Button>
           </Link>
+          <BackLink to={`/product/${id}`}>Back to Product</BackLink>
         </ButtonContainer>
-        <BackLink to={`/all-products/${id}`}>Back to Product</BackLink>
       </ProductDetailsForm>
     </ProductEditContainer>
   );

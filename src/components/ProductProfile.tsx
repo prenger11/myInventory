@@ -74,7 +74,11 @@ export interface ProductDetails {
   // Add more fields as needed
 }
 
-const ProductProfile = () => {
+interface ProductProfileProps {
+  onAddToCart: (product: ProductDetails) => void;
+}
+
+const ProductProfile: React.FC<ProductProfileProps> = ({ onAddToCart }) => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<ProductDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -110,6 +114,12 @@ const ProductProfile = () => {
     }
   };
 
+  const handleAddToCart = () => {
+    if (product) {
+      onAddToCart(product);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
@@ -135,8 +145,9 @@ const ProductProfile = () => {
           <ProductDetails>Quantity: {stock_quantity}</ProductDetails>
           <ProductDetails>Created On: {formattedCreatedAt}</ProductDetails>
         </ProductProfileInfo>
-        <EditButton to={`/product/${id}/edit`}>Edit</EditButton>
+        <EditButton to={`/product/edit/${id}`}>Edit</EditButton>
         <DeleteButton onClick={handleDeleteProduct}>Delete</DeleteButton>
+        <button onClick={handleAddToCart}>Add to Cart</button> {/* Add to Cart button */}
       </ProductProfileCard>
     </ProductProfileContainer>
   );
