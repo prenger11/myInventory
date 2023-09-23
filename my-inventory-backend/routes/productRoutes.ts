@@ -1,21 +1,8 @@
 import express, { Request, Response, Router } from 'express';
-// import multer, { Multer } from 'multer'; // Commented out image upload-related import
 import mysql, { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import 'dotenv/config';
 
 const router: Router = express.Router();
-
-// Configure multer for file uploads (Image upload code is commented out)
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, 'uploads/');
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, file.originalname);
-//   },
-// });
-
-// const upload = multer({ storage: storage });
 
 // Database connection
 const db = mysql.createPool({
@@ -55,23 +42,10 @@ router.get('/:id', async (req: Request, res: Response) => {
   }
 });
 
-// Create a product with image upload (Image upload code is commented out)
-// router.post('/', upload.single('image'), async (req: Request & { file: Express.Multer.File }, res: Response) => {
+// Create a product
 router.post('/', async (req: Request, res: Response) => {
   try {
     const newProduct: any = req.body; // This should contain the data for the new product
-
-    // Get the uploaded file information (Image upload code is commented out)
-    // const imageFile: Express.Multer.File = req.file;
-
-    // Check if an image was uploaded (Image upload code is commented out)
-    // if (!imageFile) {
-    //   res.status(400).json({ success: false, message: 'Image upload is required' });
-    //   return;
-    // }
-
-    // Implement your logic to insert the new product into the database, including the image file path (Image upload code is commented out)
-    // newProduct.image = imageFile.path; // Store the image file path in the product data
 
     const [result] = await db.query<ResultSetHeader>('INSERT INTO Products SET ?', newProduct);
 
@@ -119,7 +93,5 @@ router.delete('/:id', async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
-// Other product-related routes (update, delete, create) can be added here
 
 export default router;
